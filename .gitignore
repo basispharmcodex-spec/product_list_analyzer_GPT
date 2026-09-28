@@ -1,0 +1,19 @@
+# Local source data and generated analyses
+*.xlsb
+grls*.zip
+!plugins/grls-product-analyzer/data/grls-default.zip
+prototype/
+outputs/
+analysis-work/
+/analysis-state*.md
+/decisions*.json
+dist/
+.validator-*/
+.tmp_*
+
+# Runtime and editor files
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.DS_Store
+Thumbs.db

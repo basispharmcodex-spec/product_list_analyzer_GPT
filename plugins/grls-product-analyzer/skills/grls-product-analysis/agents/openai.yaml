@@ -1,0 +1,8 @@
+interface:
+  display_name: "Анализ product list по ГРЛС"
+  short_description: "Сопоставляет МНН и создаёт отчёт ГРЛС"
+  brand_color: "#087F79"
+  default_prompt: "Используй $grls-product-analysis для анализа product list по встроенной актуальной базе ГРЛС."
+
+policy:
+  allow_implicit_invocation: true

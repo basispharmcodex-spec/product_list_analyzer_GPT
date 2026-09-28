@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "grls-product-analyzer": {
+      "command": "python",
+      "args": [
+        "${PLUGIN_ROOT}/mcp-server/server.py"
+      ],
+      "env": {
+        "PYTHONUTF8": "1"
+      }
+    }
+  }
+}

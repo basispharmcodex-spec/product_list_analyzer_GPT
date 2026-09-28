@@ -1,0 +1,38 @@
+{
+  "$schema": "https://agent-plugins.org/schemas/1.0.0/plugin.schema.json",
+  "name": "grls-product-analyzer",
+  "version": "0.6.3",
+  "description": "Analyze XLSB, XLSX, CSV, and PDF pharmaceutical product lists against the GRLS section named Действующий and create a filterable HTML report.",
+  "author": {
+    "name": "Pharma Analytics Team"
+  },
+  "license": "MIT",
+  "keywords": [
+    "grls",
+    "pharma",
+    "product-list",
+    "inn",
+    "russia",
+    "pdf"
+  ],
+  "extensions": {
+    "com.openai": {
+      "interface": {
+        "displayName": "Анализ product list по ГРЛС",
+        "shortDescription": "Проверка МНН и интерактивный отчёт ГРЛС",
+        "longDescription": "Читает Excel, CSV и текстовые PDF, содержит стартовую базу ГРЛС, принимает обновления через чат и создаёт автономный HTML-отчёт только по разделу ГРЛС «Действующий».",
+        "developerName": "Pharma Analytics Team",
+        "category": "Productivity",
+        "capabilities": [
+          "Read",
+          "Write"
+        ],
+        "defaultPrompt": [
+          "Проанализируй product list по встроенной базе ГРЛС.",
+          "Проверь актуальность базы ГРЛС и обнови её этим ZIP."
+        ],
+        "brandColor": "#087F79"
+      }
+    }
+  }
+}

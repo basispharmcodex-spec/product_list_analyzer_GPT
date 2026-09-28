@@ -1,0 +1,20 @@
+{
+  "name": "grls-product-analyzer-marketplace",
+  "interface": {
+    "displayName": "GRLS Product Analyzer"
+  },
+  "plugins": [
+    {
+      "name": "grls-product-analyzer",
+      "source": {
+        "source": "local",
+        "path": "./plugins/grls-product-analyzer"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Productivity"
+    }
+  ]
+}

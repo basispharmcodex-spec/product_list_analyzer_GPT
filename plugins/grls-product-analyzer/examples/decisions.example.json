@@ -1,0 +1,20 @@
+[
+  {
+    "source_row": 4,
+    "product": "Abacavir & Lamivudine Tablets USP",
+    "dosage": "600+300 mg / 300+150 mg",
+    "packing": "30 tablets in jar",
+    "segment": "ARV",
+    "normalized_inn": "Абакавир + Ламивудин",
+    "accepted_registry_inns": [
+      "Абакавир+Ламивудин"
+    ],
+    "desired_form": "таблетки",
+    "form_terms": [
+      "таблет"
+    ],
+    "match_note": "Прямое совпадение двух компонентов.",
+    "confidence": "Высокая",
+    "decision_status": "matched"
+  }
+]

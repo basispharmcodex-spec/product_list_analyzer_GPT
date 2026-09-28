@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{PAGE_TITLE}}</title>
+  <style>
+    :root {
+      --ink: #14242b;
+      --muted: #60727b;
+      --line: #d9e3e6;
+      --paper: #ffffff;
+      --canvas: #f3f7f7;
+      --navy: #123d4a;
+      --teal: #087f79;
+      --teal-soft: #daf1ed;
+      --blue-soft: #e8f1f6;
+      --amber: #a76708;
+      --amber-soft: #fff0cf;
+      --red: #9f2d2d;
+      --red-soft: #fde7e5;
+      --shadow: 0 10px 30px rgba(18, 61, 74, .08);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--canvas);
+      font: 14px/1.45 Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    button, input, select { font: inherit; }
+    .hero {
+      background: linear-gradient(130deg, #0d3440 0%, #15596a 62%, #087f79 100%);
+      color: white;
+      padding: 34px 0 72px;
+    }
+    .wrap { width: min(1500px, calc(100% - 40px)); margin: 0 auto; }
+    .eyebrow { text-transform: uppercase; letter-spacing: .12em; opacity: .72; font-size: 11px; font-weight: 700; }
+    h1 { margin: 8px 0 9px; font-size: clamp(27px, 4vw, 44px); line-height: 1.12; letter-spacing: -.03em; }
+    .hero p { max-width: 850px; margin: 0; color: rgba(255,255,255,.82); font-size: 16px; }
+    .source-line { margin-top: 18px; font-size: 12px; color: rgba(255,255,255,.68); }
+    main { margin-top: -43px; padding-bottom: 60px; }
+    .metrics { display: grid; grid-template-columns: minmax(220px, 320px); gap: 12px; margin-bottom: 18px; }
+    .metric { background: var(--paper); border: 1px solid rgba(217,227,230,.7); border-radius: var(--radius); padding: 18px; box-shadow: var(--shadow); }
+    .metric strong { display: block; color: var(--navy); font-size: 27px; letter-spacing: -.03em; line-height: 1.1; }
+    .metric span { display: block; margin-top: 6px; color: var(--muted); font-size: 12px; }
+    .card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); margin-top: 16px; overflow: hidden; }
+    .card-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 21px 22px 15px; }
+    .card-head h2 { margin: 0; color: var(--navy); font-size: 21px; letter-spacing: -.02em; }
+    .card-head p { margin: 5px 0 0; color: var(--muted); max-width: 920px; }
+    .primary-note { margin: 2px 2px 18px; color: var(--navy); font-size: 16px; font-weight: 800; line-height: 1.45; }
+    [data-tooltip] { cursor: help; }
+    th button[data-tooltip] { text-decoration: underline dotted rgba(52,83,93,.55); text-underline-offset: 3px; }
+    .metric[data-tooltip] { outline: none; }
+    .metric[data-tooltip]:focus-visible { box-shadow: 0 0 0 3px rgba(8,127,121,.18), var(--shadow); }
+    .tooltip-popup {
+      position: fixed; z-index: 1000; width: max-content; max-width: min(360px, calc(100vw - 24px));
+      padding: 9px 11px; border-radius: 9px; color: white; background: #143d49;
+      box-shadow: 0 10px 30px rgba(9,29,35,.25); font-size: 12px; line-height: 1.4;
+      pointer-events: none; opacity: 0; visibility: hidden; transform: translateY(4px);
+      transition: opacity .12s ease, transform .12s ease, visibility .12s ease;
+    }
+    .tooltip-popup.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+    .table-scroll { overflow: auto; border-top: 1px solid var(--line); }
+    .summary-top-scroll { height: 18px; overflow-x: auto; overflow-y: hidden; }
+    .summary-top-scroll:focus-visible { outline: 3px solid rgba(8,127,121,.18); outline-offset: 2px; }
+    .summary-top-scroll-spacer { height: 1px; }
+    table { width: 100%; border-collapse: separate; border-spacing: 0; min-width: 1120px; }
+    #summaryTable { min-width: 1680px; }
+    th { position: sticky; top: 0; z-index: 2; background: #edf4f4; color: #34535d; text-align: left; font-size: 11px; text-transform: uppercase; letter-spacing: .045em; white-space: nowrap; }
+    th button { width: 100%; padding: 12px 11px; border: 0; background: transparent; color: inherit; cursor: pointer; text-align: left; font-weight: 750; text-transform: inherit; letter-spacing: inherit; }
+    th button:hover { color: var(--teal); }
+    td { border-top: 1px solid #e7eeee; padding: 11px; vertical-align: top; }
+    tbody tr:hover { background: #f7fbfb; }
+    .clickable { cursor: pointer; }
+    .num { text-align: right; font-variant-numeric: tabular-nums; }
+    .product-name { font-weight: 700; color: #193e49; }
+    .subtle { color: var(--muted); font-size: 12px; }
+    .pill { display: inline-flex; align-items: center; padding: 3px 8px; border-radius: 999px; font-size: 11px; font-weight: 700; white-space: nowrap; background: var(--blue-soft); color: #315d6e; }
+    .pill.yes { background: var(--teal-soft); color: #0b6864; }
+    .pill.no { background: var(--red-soft); color: var(--red); }
+    .pill.warn { background: var(--amber-soft); color: var(--amber); }
+    .pill.primary-fallback { background: var(--teal); color: white; box-shadow: 0 0 0 2px rgba(8,127,121,.14); }
+    .filters { display: grid; grid-template-columns: 1.5fr 1.1fr 1.5fr 1fr .7fr 1fr; gap: 10px; padding: 0 22px 17px; }
+    .field label { display: block; margin-bottom: 5px; font-size: 11px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .04em; }
+    .field input, .field select { width: 100%; border: 1px solid #cbd9dc; border-radius: 10px; padding: 9px 10px; background: white; color: var(--ink); outline: none; }
+    .field input:focus, .field select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(8,127,121,.12); }
+    .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 22px; border-top: 1px solid var(--line); background: #fbfdfd; }
+    .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .btn { border: 1px solid #bdd0d4; border-radius: 9px; padding: 8px 11px; background: white; color: #244a56; cursor: pointer; font-weight: 650; }
+    .btn:hover { border-color: var(--teal); color: var(--teal); }
+    .btn.primary { background: var(--teal); color: white; border-color: var(--teal); }
+    .btn:disabled { opacity: .45; cursor: default; }
+    .count { color: var(--muted); font-size: 12px; }
+    .clamp { max-width: 430px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+    .detail-btn { border: 0; background: transparent; color: var(--teal); padding: 4px 0; cursor: pointer; font-weight: 700; }
+    .empty { padding: 40px 20px; text-align: center; color: var(--muted); }
+    dialog { width: min(900px, calc(100% - 28px)); max-height: 88vh; border: 0; border-radius: 16px; padding: 0; box-shadow: 0 25px 80px rgba(0,0,0,.28); }
+    dialog::backdrop { background: rgba(9,29,35,.55); backdrop-filter: blur(2px); }
+    .dialog-head { display: flex; justify-content: space-between; gap: 20px; padding: 20px 22px; background: var(--navy); color: white; }
+    .dialog-head h3 { margin: 0; font-size: 19px; }
+    .dialog-close { border: 0; border-radius: 8px; width: 32px; height: 32px; background: rgba(255,255,255,.12); color: white; cursor: pointer; font-size: 19px; }
+    .dialog-body { padding: 20px 22px 26px; overflow: auto; }
+    .detail-grid { display: grid; grid-template-columns: 190px 1fr; gap: 0; }
+    .detail-grid dt, .detail-grid dd { margin: 0; padding: 9px 0; border-bottom: 1px solid #e7eeee; }
+    .detail-grid dt { color: var(--muted); font-weight: 700; }
+    .detail-grid dd { white-space: pre-wrap; overflow-wrap: anywhere; }
+    footer { color: var(--muted); text-align: center; font-size: 12px; padding: 25px 0 8px; }
+    @media (max-width: 1100px) { .metrics { grid-template-columns: repeat(3, 1fr); } .filters { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 650px) { .wrap { width: min(100% - 20px, 1500px); } .metrics { grid-template-columns: repeat(2, 1fr); } .filters { grid-template-columns: 1fr; padding: 0 14px 14px; } .card-head { padding: 18px 14px 14px; } .toolbar { padding: 11px 14px; } .detail-grid { grid-template-columns: 1fr; } .detail-grid dt { border-bottom: 0; padding-bottom: 0; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="eyebrow">Аналитический отчёт</div>
+      <h1>{{REPORT_TITLE}}</h1>
+      <div class="source-line">{{SOURCE_LINE}}</div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="metrics" aria-label="Ключевые показатели">
+      <div class="metric" tabindex="0" data-tooltip="Количество товаров в исходном файле производителя."><strong>{{PRODUCT_COUNT}}</strong><span>позиций Product List</span></div>
+    </section>
+
+    <p class="primary-note">Основные показатели — «Количество конкурентных препаратов на рынке» и «Производители на рынке».</p>
+
+    <section class="card" id="summarySection">
+      <div class="card-head">
+        <div>
+          <h2>Сводка по позициям производителя</h2>
+          <p>Нажмите на строку, чтобы отфильтровать реестр ниже. Повторяющиеся МНН сохранены отдельными строками, поскольку лекарственная форма и дозировка в Product List различаются.</p>
+        </div>
+      </div>
+      <div class="table-scroll summary-top-scroll" id="summaryTopScroll" tabindex="0" role="scrollbar" aria-label="Горизонтальная прокрутка сводной таблицы" aria-controls="summaryTable" aria-orientation="horizontal" aria-valuemin="0" aria-valuenow="0">
+        <div class="summary-top-scroll-spacer" id="summaryTopScrollSpacer"></div>
+      </div>
+      <div class="table-scroll" id="summaryTableScroll" tabindex="0" aria-label="Сводная таблица по позициям производителя">
+        <table id="summaryTable">
+          <thead><tr>
+            <th><button data-key="serial_number" data-tooltip="Номер позиции в исходном Product List.">№</button></th>
+            <th><button data-key="product" data-tooltip="Исходное название без смыслового изменения. Под ним показаны дозировка и упаковка.">Продукт производителя</button></th>
+            <th><button data-key="normalized_inn" data-tooltip="Русское наименование действующего вещества или комбинации.">Нормализованное МНН</button></th>
+            <th><button data-key="desired_form" data-tooltip="Форма, которую предлагает производитель: таблетки, капсулы, крем, сироп и т. п.">Форма из Product List</button></th>
+            <th class="num"><button data-key="registration_count" data-tooltip="Все уникальные РУ с этим МНН: лекарственные препараты и фармацевтические субстанции вместе.">Всего РУ</button></th>
+            <th class="num"><button data-key="medicine_count" data-tooltip="Количество уникальных РУ лекарственных препаратов. Если форма в Product List не указана, этот показатель выделяется как основной.">Лекарственные препараты</button></th>
+            <th class="num"><button data-key="substance_count" data-tooltip="Количество уникальных РУ, где форма выпуска обозначена как фармацевтическая субстанция.">Фарм. субстанции</button></th>
+            <th class="num"><button data-key="ved_count" data-tooltip="Количество уникальных РУ, имеющих признак включения в ЖНВЛП.">ЖНВЛП</button></th>
+            <th class="num"><button data-key="form_registration_count" data-tooltip="Количество уникальных действующих РУ с МНН и лекарственной формой, соответствующей позиции Product List.">Конкурентные препараты на рынке</button></th>
+            <th class="num"><button data-key="market_manufacturer_count" data-tooltip="Количество уникальных юридических лиц — держателей РУ среди конкурентных препаратов нужной формы.">Производители на рынке</button></th>
+          </tr></thead>
+          <tbody id="summaryBody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="card" id="registrySection">
+      <div class="card-head">
+        <div>
+          <h2>Действующие регистрационные удостоверения</h2>
+          <p>Показаны уникальные РУ из раздела ГРЛС «Действующий». Раскрывающиеся списки можно комбинировать; полные формы выпуска, производство и документация доступны в карточке.</p>
+        </div>
+        <button class="btn" id="resetFilters">Сбросить фильтры</button>
+      </div>
+      <div class="filters">
+        <div class="field"><label for="searchInput">Поиск</label><input id="searchInput" type="search" placeholder="РУ, название, держатель, форма…"></div>
+        <div class="field"><label for="innFilter">МНН</label><select id="innFilter"><option value="">Все МНН</option></select></div>
+        <div class="field"><label for="formFilter">Форма выпуска</label><select id="formFilter"><option value="">Все формы</option></select></div>
+        <div class="field"><label for="typeFilter">Тип записи</label><select id="typeFilter"><option value="">Все типы</option><option value="Лекарственный препарат">Лекарственный препарат</option><option value="Фармацевтическая субстанция">Фармацевтическая субстанция</option></select></div>
+        <div class="field"><label for="vedFilter">ЖНВЛП</label><select id="vedFilter"><option value="">Все</option><option value="Да">Да</option><option value="Нет">Нет</option></select></div>
+        <div class="field"><label for="countryFilter">Страна держателя</label><select id="countryFilter"><option value="">Все страны</option></select></div>
+      </div>
+      <div class="toolbar">
+        <div class="toolbar-left"><span class="count" id="resultCount"></span><button class="btn" id="exportCsv">Скачать выбранное в CSV</button></div>
+        <div class="toolbar-right"><label class="count" for="pageSize">Строк на странице</label><select id="pageSize" class="btn"><option>25</option><option>50</option><option>100</option><option>250</option></select><button class="btn" id="prevPage">Назад</button><span class="count" id="pageLabel"></span><button class="btn" id="nextPage">Вперёд</button></div>
+      </div>
+      <div class="table-scroll">
+        <table id="registryTable">
+          <thead><tr>
+            <th><button data-key="registration_number">Номер РУ</button></th>
+            <th><button data-key="trade_name">Торговое наименование</button></th>
+            <th><button data-key="inn">МНН ГРЛС</button></th>
+            <th><button data-key="record_type" data-tooltip="Используйте раскрывающийся список «Тип записи» над таблицей, чтобы оставить только лекарственные препараты или только фармацевтические субстанции.">Тип записи</button></th>
+            <th><button data-key="release_forms">Формы выпуска</button></th>
+            <th><button data-key="ved">ЖНВЛП</button></th>
+            <th><button data-key="holder">Производитель / держатель РУ</button></th>
+            <th><button data-key="holder_country">Страна</button></th>
+            <th><button data-key="registration_date">Дата регистрации</button></th>
+            <th><button data-key="expiration_date" data-tooltip="Дата окончания действия регистрационного удостоверения из ГРЛС. Пустое значение не трактуется автоматически.">Окончание регистрации</button></th>
+            <th>Карточка</th>
+          </tr></thead>
+          <tbody id="registryBody"></tbody>
+        </table>
+      </div>
+    </section>
+    <footer>Отчёт предназначен для аналитической проверки. Источник каждой записи указан в карточке.</footer>
+  </main>
+
+  <div class="tooltip-popup" id="helpTooltip" role="tooltip" aria-hidden="true"></div>
+
+  <dialog id="detailDialog">
+    <div class="dialog-head"><h3 id="dialogTitle">Карточка ГРЛС</h3><button class="dialog-close" id="dialogClose" aria-label="Закрыть">×</button></div>
+    <div class="dialog-body"><dl class="detail-grid" id="dialogContent"></dl></div>
+  </dialog>
+
+  <script id="productsData" type="application/json">{{PRODUCTS_JSON}}</script>
+  <script id="recordsData" type="application/json">{{RECORDS_JSON}}</script>
+  <script>
+    const products = JSON.parse(document.getElementById('productsData').textContent);
+    const records = JSON.parse(document.getElementById('recordsData').textContent);
+    const $ = id => document.getElementById(id);
+    const state = { summaryKey: 'serial_number', summaryDirection: 1, detailKey: 'registration_date', detailDirection: -1, page: 1 };
+    const helpTooltip = $('helpTooltip');
+    let tooltipTarget = null;
+
+    function positionTooltip(x, y) {
+      const gap = 12;
+      const bounds = helpTooltip.getBoundingClientRect();
+      let left = Math.min(x + gap, window.innerWidth - bounds.width - gap);
+      let top = y + gap;
+      if (top + bounds.height > window.innerHeight - gap) top = y - bounds.height - gap;
+      helpTooltip.style.left = `${Math.max(gap, left)}px`;
+      helpTooltip.style.top = `${Math.max(gap, top)}px`;
+    }
+    function showTooltip(target, x, y) {
+      const text = target?.dataset?.tooltip;
+      if (!text) return;
+      tooltipTarget = target;
+      helpTooltip.textContent = text;
+      helpTooltip.classList.add('visible');
+      helpTooltip.setAttribute('aria-hidden', 'false');
+      positionTooltip(x, y);
+    }
+    function hideTooltip() {
+      tooltipTarget = null;
+      helpTooltip.classList.remove('visible');
+      helpTooltip.setAttribute('aria-hidden', 'true');
+    }
+    document.addEventListener('pointerover', event => {
+      const target = event.target.closest('[data-tooltip]');
+      if (target && target !== tooltipTarget) showTooltip(target, event.clientX, event.clientY);
+    });
+    document.addEventListener('pointermove', event => { if (tooltipTarget) positionTooltip(event.clientX, event.clientY); });
+    document.addEventListener('pointerout', event => {
+      if (tooltipTarget && !tooltipTarget.contains(event.relatedTarget)) hideTooltip();
+    });
+    document.addEventListener('focusin', event => {
+      const target = event.target.closest('[data-tooltip]');
+      if (!target) return;
+      const bounds = target.getBoundingClientRect();
+      showTooltip(target, bounds.left + bounds.width / 2, bounds.bottom);
+    });
+    document.addEventListener('focusout', event => { if (event.target.closest('[data-tooltip]')) hideTooltip(); });
+
+    function escapeHtml(value) {
+      return String(value ?? '').replace(/[&<>'"]/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[char]));
+    }
+    function dateValue(value) {
+      const match = String(value || '').match(/^(\d{2})\.(\d{2})\.(\d{4})$/);
+      return match ? Number(`${match[3]}${match[2]}${match[1]}`) : 0;
+    }
+    function compareValues(a, b, key) {
+      if (key.includes('date')) return dateValue(a[key]) - dateValue(b[key]);
+      if (typeof a[key] === 'number' || typeof b[key] === 'number') return Number(a[key] || 0) - Number(b[key] || 0);
+      return String(a[key] ?? '').localeCompare(String(b[key] ?? ''), 'ru', {numeric: true, sensitivity: 'base'});
+    }
+    function addOptions(select, values) {
+      [...new Set(values.filter(Boolean))].sort((a,b) => String(a).localeCompare(String(b), 'ru')).forEach(value => {
+        const option = document.createElement('option'); option.value = value; option.textContent = value; select.appendChild(option);
+      });
+    }
+    const formTerms = ['таблетки','капсулы','раствор','суспензия','сироп','мазь','крем','гель','порошок','лиофилизат','суппозитории','капли','спрей','аэрозоль','пластырь'];
+
+    function renderSummary() {
+      const sorted = [...products].sort((a,b) => state.summaryDirection * compareValues(a,b,state.summaryKey));
+      $('summaryBody').innerHTML = sorted.map(item => {
+        const hasDesiredForm = String(item.desired_form || '').trim().length > 0;
+        const medicines = hasDesiredForm
+          ? `<strong>${item.medicine_count}</strong>`
+          : `<span class="pill primary-fallback" data-primary-metric="medicine">${item.medicine_count}</span>`;
+        const form = item.form_registration_count > 0 ? `<span class="pill yes">${item.form_registration_count}</span>` : `<span class="pill no">0</span>`;
+        const manufacturers = item.market_manufacturer_count > 0 ? `<span class="pill">${item.market_manufacturer_count}</span>` : `<span class="pill no">0</span>`;
+        return `<tr class="clickable" data-group="${escapeHtml(item.normalized_inn)}" title="Показать записи этого МНН">
+          <td class="num">${escapeHtml(item.serial_number)}</td>
+          <td><div class="product-name">${escapeHtml(item.product)}</div><div class="subtle">${escapeHtml(item.dosage)} · ${escapeHtml(item.packing)}</div></td>
+          <td><strong>${escapeHtml(item.normalized_inn)}</strong></td>
+          <td>${escapeHtml(item.desired_form)}</td>
+          <td class="num"><strong>${item.registration_count}</strong></td>
+          <td class="num">${medicines}</td>
+          <td class="num">${item.substance_count}</td>
+          <td class="num">${item.ved_count}</td>
+          <td class="num">${form}</td>
+          <td class="num">${manufacturers}</td>
+        </tr>`;
+      }).join('');
+      document.querySelectorAll('#summaryBody tr').forEach(row => {
+        let pointerStart = null;
+        row.addEventListener('pointerdown', event => {
+          pointerStart = {x: event.clientX, y: event.clientY};
+        });
+        row.addEventListener('click', event => {
+          const dragged = pointerStart && (
+            Math.abs(event.clientX - pointerStart.x) > 4 ||
+            Math.abs(event.clientY - pointerStart.y) > 4
+          );
+          pointerStart = null;
+          if (dragged) return;
+          $('innFilter').value = row.dataset.group; state.page = 1; renderRegistry(); $('registrySection').scrollIntoView({behavior:'smooth'});
+        });
+      });
+    }
+
+    function setupSummaryScrollSync() {
+      const topScroll = $('summaryTopScroll');
+      const tableScroll = $('summaryTableScroll');
+      const spacer = $('summaryTopScrollSpacer');
+      const table = $('summaryTable');
+      let syncing = false;
+
+      function updateDimensions() {
+        const maximum = Math.max(0, tableScroll.scrollWidth - tableScroll.clientWidth);
+        spacer.style.width = `${table.scrollWidth}px`;
+        topScroll.setAttribute('aria-valuemax', String(maximum));
+        topScroll.setAttribute('aria-valuenow', String(Math.round(topScroll.scrollLeft)));
+      }
+      function synchronize(source, target) {
+        if (syncing) return;
+        syncing = true;
+        target.scrollLeft = source.scrollLeft;
+        topScroll.setAttribute('aria-valuenow', String(Math.round(topScroll.scrollLeft)));
+        requestAnimationFrame(() => { syncing = false; });
+      }
+
+      topScroll.addEventListener('scroll', () => synchronize(topScroll, tableScroll));
+      tableScroll.addEventListener('scroll', () => synchronize(tableScroll, topScroll));
+      topScroll.addEventListener('keydown', event => {
+        const maximum = Math.max(0, tableScroll.scrollWidth - tableScroll.clientWidth);
+        const step = 120;
+        if (event.key === 'ArrowRight') topScroll.scrollLeft = Math.min(maximum, topScroll.scrollLeft + step);
+        else if (event.key === 'ArrowLeft') topScroll.scrollLeft = Math.max(0, topScroll.scrollLeft - step);
+        else if (event.key === 'End') topScroll.scrollLeft = maximum;
+        else if (event.key === 'Home') topScroll.scrollLeft = 0;
+        else return;
+        event.preventDefault();
+      });
+      window.addEventListener('resize', updateDimensions);
+      updateDimensions();
+    }
+
+    function filteredRecords() {
+      const query = $('searchInput').value.trim().toLocaleLowerCase('ru');
+      const inn = $('innFilter').value;
+      const form = $('formFilter').value;
+      const recordType = $('typeFilter').value;
+      const ved = $('vedFilter').value;
+      const country = $('countryFilter').value;
+      return records.filter(record => {
+        if (inn) {
+          const accepted = products.filter(item => item.normalized_inn === inn).flatMap(item => item.accepted_registry_inns || []);
+          if (!accepted.includes(record.inn)) return false;
+        }
+        if (form && !String(record.release_forms || '').toLocaleLowerCase('ru').includes(form)) return false;
+        if (recordType && record.record_type !== recordType) return false;
+        if (ved && String(record.ved || '').trim() !== ved) return false;
+        if (country && record.holder_country !== country) return false;
+        if (query) {
+          const haystack = [record.registration_number, record.trade_name, record.inn, record.release_forms, record.holder, record.pharmacotherapeutic_group].join(' ').toLocaleLowerCase('ru');
+          if (!haystack.includes(query)) return false;
+        }
+        return true;
+      }).sort((a,b) => state.detailDirection * compareValues(a,b,state.detailKey));
+    }
+
+    function renderRegistry() {
+      const filtered = filteredRecords();
+      const pageSize = Number($('pageSize').value);
+      const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+      state.page = Math.min(state.page, totalPages);
+      const start = (state.page - 1) * pageSize;
+      const page = filtered.slice(start, start + pageSize);
+      $('resultCount').textContent = `Показано ${filtered.length} из ${records.length} записей`;
+      $('pageLabel').textContent = `${state.page} / ${totalPages}`;
+      $('prevPage').disabled = state.page <= 1;
+      $('nextPage').disabled = state.page >= totalPages;
+      $('registryBody').innerHTML = page.length ? page.map((record, index) => `<tr>
+        <td><strong>${escapeHtml(record.registration_number)}</strong></td>
+        <td>${escapeHtml(record.trade_name)}</td>
+        <td>${escapeHtml(record.inn)}</td>
+        <td>${record.record_type === 'Фармацевтическая субстанция' ? '<span class="pill warn">Фармацевтическая субстанция</span>' : '<span class="pill yes">Лекарственный препарат</span>'}</td>
+        <td><div class="clamp">${escapeHtml(record.release_forms)}</div></td>
+        <td>${String(record.ved || '').trim() === 'Да' ? '<span class="pill yes">Да</span>' : '<span class="pill">Нет</span>'}</td>
+        <td><div class="clamp">${escapeHtml(record.holder)}</div></td>
+        <td>${escapeHtml(record.holder_country)}</td>
+        <td>${escapeHtml(record.registration_date)}</td>
+        <td>${escapeHtml(record.expiration_date || 'Не указано')}</td>
+        <td><button class="detail-btn" data-record="${records.indexOf(record)}">Подробнее</button></td>
+      </tr>`).join('') : `<tr><td colspan="11"><div class="empty">По выбранным условиям записей нет.</div></td></tr>`;
+      document.querySelectorAll('.detail-btn').forEach(button => button.addEventListener('click', () => showDetails(records[Number(button.dataset.record)])));
+    }
+
+    const detailLabels = [
+      ['registration_number','Номер РУ'], ['trade_name','Торговое наименование'], ['inn','МНН ГРЛС'], ['record_type','Тип записи'],
+      ['registration_date','Дата регистрации'], ['expiration_date','Дата окончания'], ['reregistration','Перерегистрация'], ['cancellation_date','Дата аннулирования'],
+      ['holder','Производитель / держатель РУ'], ['holder_country','Страна держателя'], ['release_forms','Формы выпуска'],
+      ['manufacturing_stages','Стадии производства'], ['normative_documentation','Нормативная документация'],
+      ['pharmacotherapeutic_group','Фармакотерапевтическая группа'], ['ved','ЖНВЛП'],
+      ['controlled_substances','Наркотические/психотропные вещества'], ['orphan','Орфанный статус'],
+      ['source_file','Файл источника'], ['source_row','Строка источника']
+    ];
+    function showDetails(record) {
+      $('dialogTitle').textContent = `${record.trade_name || 'Запись ГРЛС'} · ${record.registration_number || ''}`;
+      $('dialogContent').innerHTML = detailLabels.map(([key,label]) => `<dt>${escapeHtml(label)}</dt><dd>${escapeHtml(record[key] || '—')}</dd>`).join('');
+      $('detailDialog').showModal();
+    }
+
+    function exportCsv() {
+      const data = filteredRecords();
+      const columns = detailLabels.map(([key,label]) => ({key,label}));
+      const quote = value => `"${String(value ?? '').replaceAll('"','""')}"`;
+      const csv = '\ufeff' + [columns.map(c => quote(c.label)).join(';'), ...data.map(row => columns.map(c => quote(row[c.key])).join(';'))].join('\r\n');
+      const link = document.createElement('a'); link.href = URL.createObjectURL(new Blob([csv], {type:'text/csv;charset=utf-8'})); link.download = 'grls_filtered.csv'; link.click(); URL.revokeObjectURL(link.href);
+    }
+
+    addOptions($('innFilter'), products.map(item => item.normalized_inn));
+    addOptions($('formFilter'), formTerms.filter(term => records.some(item => String(item.release_forms || '').toLocaleLowerCase('ru').includes(term))));
+    addOptions($('countryFilter'), records.map(item => item.holder_country));
+    document.querySelectorAll('#summaryTable th button').forEach(button => button.addEventListener('click', () => {
+      state.summaryDirection = state.summaryKey === button.dataset.key ? -state.summaryDirection : 1; state.summaryKey = button.dataset.key; renderSummary();
+    }));
+    document.querySelectorAll('#registryTable th button').forEach(button => button.addEventListener('click', () => {
+      state.detailDirection = state.detailKey === button.dataset.key ? -state.detailDirection : 1; state.detailKey = button.dataset.key; state.page = 1; renderRegistry();
+    }));
+    ['searchInput','innFilter','formFilter','typeFilter','vedFilter','countryFilter','pageSize'].forEach(id => $(id).addEventListener(id === 'searchInput' ? 'input' : 'change', () => { state.page = 1; renderRegistry(); }));
+    $('resetFilters').addEventListener('click', () => { ['searchInput','innFilter','formFilter','typeFilter','vedFilter','countryFilter'].forEach(id => $(id).value=''); state.page=1; renderRegistry(); });
+    $('prevPage').addEventListener('click', () => { state.page--; renderRegistry(); });
+    $('nextPage').addEventListener('click', () => { state.page++; renderRegistry(); });
+    $('exportCsv').addEventListener('click', exportCsv);
+    $('dialogClose').addEventListener('click', () => $('detailDialog').close());
+    $('detailDialog').addEventListener('click', event => { if (event.target === $('detailDialog')) $('detailDialog').close(); });
+    renderSummary(); renderRegistry(); setupSummaryScrollSync();
+  </script>
+</body>
+</html>
